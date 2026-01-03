@@ -1,19 +1,20 @@
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+export function middleware(req: NextRequest) {
+  const pathname = req.nextUrl.pathname;
 
-  // トップページは誰でもOK
+  // トップだけ通す
   if (pathname === "/") {
     return NextResponse.next();
   }
 
-  // それ以外は全部トップに戻す
-  return NextResponse.redirect(new URL("/", request.url));
+  // それ以外はトップへ
+  const url = req.nextUrl.clone();
+  url.pathname = "/";
+  url.search = "";
+  return NextResponse.redirect(url);
 }
 
-// 対象にするパス
 export const config = {
-  matcher: "/((?!_next|favicon.ico).*)",
+  matcher: ["/:path*"],
 };
